@@ -78,14 +78,14 @@ func NotFoundHandler(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	log.Println("Server Start on localhost:8000")
-	router := mux.NewRouter()
+	r := mux.NewRouter()
 	people = append(people, Person{ID: "1", Firstname: "John", Lastname: "Doe", Address: &Address{City: "City X", State: "State X"}})
 	people = append(people, Person{ID: "2", Firstname: "Koko", Lastname: "Doe", Address: &Address{City: "City Z", State: "State Y"}})
-	router.NotFoundHandler = http.HandlerFunc(NotFoundHandler)
-	router.HandleFunc("/", Welcome).Methods("GET")
-	router.HandleFunc("/people", GetPeople).Methods("GET")
-	router.HandleFunc("/people/{id}", GetPerson).Methods("GET")
-	router.HandleFunc("/people/{id}", CreatePerson).Methods("POST")
-	router.HandleFunc("/people/{id}", DeletePerson).Methods("DELETE")
-	log.Fatal(http.ListenAndServe(":8000", router))
+	r.NotFoundHandler = http.HandlerFunc(NotFoundHandler)
+	r.HandleFunc("/", Welcome).Methods("GET")
+	r.HandleFunc("/people", GetPeople).Methods("GET")
+	r.HandleFunc("/people/{id}", GetPerson).Methods("GET")
+	r.HandleFunc("/people/{id}", CreatePerson).Methods("POST")
+	r.HandleFunc("/people/{id}", DeletePerson).Methods("DELETE")
+	log.Fatal(http.ListenAndServe(":8000", r))
 }
