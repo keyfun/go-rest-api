@@ -101,8 +101,6 @@ func main() {
 	people = append(people, Person{ID: "1", Firstname: "John", Lastname: "Doe", Address: &Address{City: "City X", State: "State X"}})
 	people = append(people, Person{ID: "2", Firstname: "Koko", Lastname: "Doe", Address: &Address{City: "City Z", State: "State Y"}})
 	r.NotFoundHandler = http.HandlerFunc(NotFoundHandler)
-	// r.HandleFunc("/", Welcome).Methods("GET")
-	// r.PathPrefix("/").HandlerFunc(CatchAllHandler)
 
 	s := r.PathPrefix("/people").Subrouter()
 	s.HandleFunc("/", GetPeople).Methods("GET")
@@ -112,6 +110,9 @@ func main() {
 
 	r.HandleFunc("/articles/{category}/", ArticlesCategoryHandler)
 	r.HandleFunc("/articles/{category}/{id:[0-9]+}", ArticleHandler).Methods("GET")
+
+	r.HandleFunc("/", WelcomeHandler).Methods("GET")
+	r.PathPrefix("/").HandlerFunc(CatchAllHandler)
 
 	log.Fatal(http.ListenAndServe(":8000", r))
 }
