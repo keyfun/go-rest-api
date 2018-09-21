@@ -64,8 +64,22 @@ func DeletePerson(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// Welcome API Home
-func Welcome(w http.ResponseWriter, r *http.Request) {
+// ArticlesCategoryHandler Test
+func ArticlesCategoryHandler(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	w.WriteHeader(http.StatusOK)
+	fmt.Fprintf(w, "Category: %v\n", vars["category"])
+}
+
+// ArticleHandler Test
+func ArticleHandler(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	w.WriteHeader(http.StatusOK)
+	fmt.Fprintf(w, "Category: %v\nid: %v", vars["category"], vars["id"])
+}
+
+// WelcomeHandler API Home
+func WelcomeHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusAccepted)
 	fmt.Fprint(w, "go-rest-api Home")
 }
@@ -76,16 +90,28 @@ func NotFoundHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprint(w, "404 API Not Found")
 }
 
+// CatchAllHandler handle catch all
+func CatchAllHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprint(w, "Catch Me If You Can")
+}
+
 func main() {
 	log.Println("Server Start on localhost:8000")
 	r := mux.NewRouter()
 	people = append(people, Person{ID: "1", Firstname: "John", Lastname: "Doe", Address: &Address{City: "City X", State: "State X"}})
 	people = append(people, Person{ID: "2", Firstname: "Koko", Lastname: "Doe", Address: &Address{City: "City Z", State: "State Y"}})
 	r.NotFoundHandler = http.HandlerFunc(NotFoundHandler)
-	r.HandleFunc("/", Welcome).Methods("GET")
-	r.HandleFunc("/people", GetPeople).Methods("GET")
-	r.HandleFunc("/people/{id}", GetPerson).Methods("GET")
-	r.HandleFunc("/people/{id}", CreatePerson).Methods("POST")
-	r.HandleFunc("/people/{id}", DeletePerson).Methods("DELETE")
+	// r.HandleFunc("/", Welcome).Methods("GET")
+	// r.PathPrefix("/").HandlerFunc(CatchAllHandler)
+
+	s := r.PathPrefix("/people").Subrouter()
+	s.HandleFunc("/", GetPeople).Methods("GET")
+	s.HandleFunc("/{id}", GetPerson).Methods("GET")
+	s.HandleFunc("/{id}", CreatePerson).Methods("POST")
+	s.HandleFunc("/{id}", DeletePerson).Methods("DELETE")
+
+	r.HandleFunc("/articles/{category}/", ArticlesCategoryHandler)
+	r.HandleFunc("/articles/{category}/{id:[0-9]+}", ArticleHandler).Methods("GET")
+
 	log.Fatal(http.ListenAndServe(":8000", r))
 }
