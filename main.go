@@ -112,15 +112,17 @@ func main() {
 
 	r.HandleFunc("/articles/{category}/", ArticlesCategoryHandler)
 	r.HandleFunc("/articles/{category}/{id:[0-9]+}", ArticleHandler).Methods("GET")
+
 	r.HandleFunc("/", WelcomeHandler).Methods("GET")
-	r.PathPrefix("/").HandlerFunc(CatchAllHandler)
 
 	// static handler
 	var dir string
 	flag.StringVar(&dir, "dir", ".", "the directory to serve files from. Defaults to the current dir")
 	flag.Parse()
 	// This will serve files under http://localhost:8000/static/<filename>
-	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir(dir))))
+	r.PathPrefix("/static/").Handler(http.StripPrefix("/", http.FileServer(http.Dir(dir))))
+
+	r.PathPrefix("/").HandlerFunc(CatchAllHandler)
 
 	srv := &http.Server{
 		Handler: r,
